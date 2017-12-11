@@ -1,0 +1,63 @@
+XML DOCUMENT PARSER
+
+Dependency
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.apache.commons.io.IOUtils;
+
+public static void dalFile() throws ParserConfigurationException, SAXException, IOException{
+		String oraFileName = "D:\\UNIFY_Workspace\\Unify_Branch_B_8_2_1\\RPM-VB8.1.0 Trunk\\LDServices\\src\\dal-oracle-queries.xml";
+		String postFileName = "D:\\UNIFY_Workspace\\Unify_Branch_B_8_2_1\\RPM-VB8.1.0 Trunk\\LDServices\\src\\dal-postgre-queries.xml";
+		DocumentBuilderFactory oraceldbf = DocumentBuilderFactory.newInstance();
+		DocumentBuilder oraceldb = oraceldbf.newDocumentBuilder();
+		Document oraceldoc = oraceldb.parse(oraFileName);
+		NodeList oracelQueryNodeList = oraceldoc.getDocumentElement().getElementsByTagName("query");
+		Hashtable<String, String> oracelQueryList = new Hashtable<String, String>(oracelQueryNodeList.getLength());
+		
+		DocumentBuilderFactory  postgradbf = DocumentBuilderFactory.newInstance();
+		DocumentBuilder   postgradb =   postgradbf.newDocumentBuilder();
+		Document   postgradoc =   postgradb.parse(postFileName);
+		NodeList  postgraQueryNodeList =  postgradoc.getDocumentElement().getElementsByTagName("query");
+		Hashtable<String, String> postgraQueryList = new Hashtable<String, String>( postgraQueryNodeList.getLength());
+		Node queryNode=null; 
+		String key, value;
+		
+		for(int i =0 ;i<oracelQueryNodeList.getLength();i++){
+			queryNode = oracelQueryNodeList.item(i);
+
+			key = queryNode.getAttributes().getNamedItem("key").getNodeValue();
+			value = queryNode.getTextContent();
+
+			if(oracelQueryList.containsKey(key))
+				System.out.println(key + " DUPLICATE");
+			oracelQueryList.put(key, value);
+		}
+		
+		for(int i =0 ;i<postgraQueryNodeList.getLength();i++){
+			queryNode = postgraQueryNodeList.item(i);
+
+			key = queryNode.getAttributes().getNamedItem("key").getNodeValue();
+			value = queryNode.getTextContent();
+
+			if(postgraQueryList.containsKey(key))
+				System.out.println(key + " DUPLICATE");
+			postgraQueryList.put(key, value);
+		}
+		for(Entry<String, String> orakey : postgraQueryList.entrySet()){
+			if(postgraQueryList.containsKey(orakey.getKey())){
+				System.out.println(orakey.getKey() + "Is there in PostGra");
+			}else{
+				System.out.println(orakey.getKey() + "Not there in PostGra");
+			}
+		}
+	}
+	
